@@ -1,7 +1,5 @@
-/*
- * Shubhankar Singh 2016
- */
-package pixeleater;
+
+package lwjgl.program;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -18,13 +16,14 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.Sys;
 
-public class PixelEater {
+public class LWJGLProgram {
+    int score = 0;
     double x = 27.5;
     double y = 46.5;
 
-    public void start() throws IOException {
+  public void start() throws IOException {
         try {
-            Display.setDisplayMode(new DisplayMode(1110, 1220)); //added ten to x and y to prevent out of bound error
+            Display.setDisplayMode(new DisplayMode(550, 610)); //added ten to x and y to prevent out of bound error
             Display.create();
         } catch (LWJGLException e) {
             e.printStackTrace();
@@ -42,7 +41,7 @@ public class PixelEater {
 
             // set the color of the quad (R,G,B,A)
             GL11.glColor3f(0f, 38f, 255f);
-
+            //put the file into memory and then modify the memory
             // draw quad
             File file = new File("Pacman Board.png");
             GL11.glBegin(GL11.GL_QUADS);
@@ -56,7 +55,6 @@ public class PixelEater {
 
         Display.destroy();
     }
-
     public static void getColorValue(File file) throws IOException {
 
         BufferedImage image = ImageIO.read(file);
@@ -80,15 +78,26 @@ public class PixelEater {
         }
 
     }
+    public void board(int x, int y){
+        int[][]gameboard = new int[61][55];
+    }
+    public void updateYellow(){
+        
+    }
     public  void updatePos(File file) throws IOException{
         BufferedImage image = ImageIO.read(file);
+        float border = 1.49999f;
         
         int colortr = image.getRGB((int)x + 1, (int)y + 1);
         int colortl = image.getRGB((int)x - 1, (int)y + 1);
         int colorbr = image.getRGB((int)x + 1, (int)y - 1);
         int colorbl = image.getRGB((int)x - 1, (int)y - 1);
+        int colorRight = image.getRGB((int) (x + border), (int) (y));
+        int colorLeft = image.getRGB((int) (x - border), (int) (y));
+        int colorTop = image.getRGB((int) (x), (int) (y + border));
+        int colorBottom = image.getRGB((int) (x ), (int) (y - border));
         
-        System.out.println("Color: " + colortr + " Coordinates: " + x + ", " + y);
+        System.out.println("Score: " + score +"Color: " + colorRight+ " Coordinates: " + x + ", " + y);
         
         if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) x -= .01;
 	if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) x +=.01;
@@ -101,10 +110,17 @@ public class PixelEater {
         if((colorbr == -16767233)){x-=.01;y+=.01;}
         if((colorbl == -16767233)){x+=.01;y+=.01;}
         
+        if(colorRight == -10240 ||colorLeft == -10240 || colorBottom == -10240 ||colorTop == -10240){
+        score += 1;
+        }
+        
+            
         if (x < 0) x = 0;
         if (x > 550) x = 550;
 	if (y < 0) y = 0;
 	if (y > 610) y = 610;
+        if (x < 1.0999999999985015)x = 53.489999999996426;
+        if (x > 53.489999999996426) x = 1.1999999999985015;
     }
     public void pacman(){
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
@@ -125,11 +141,9 @@ public class PixelEater {
 			GL11.glEnd();
 		GL11.glPopMatrix();
     }
-    
 
     public static void main(String[] argv) throws IOException {
-        PixelEater game = new PixelEater();
-        File file = new File("Pacman Board.png");
+        LWJGLProgram game = new LWJGLProgram();
         game.start();
 
     }
