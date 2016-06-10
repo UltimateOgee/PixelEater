@@ -1,5 +1,7 @@
 package pixeleater;
 
+//239
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +42,17 @@ public class PixelEater {
 
         pacman p = new pacman();
         monster m = new monster();
+        monster m1 = new monster();
+        monster m2 = new monster();
+        monster m3 = new monster();
+        monster m4 = new monster();
+        monster m5 = new monster();
+        monster m6 = new monster();
+        monster m7 = new monster();
+        monster m8 = new monster();
+        monster m9 = new monster();
+        monster m0 = new monster();
+        
 
         // init OpenGL here
         GL11.glMatrixMode(GL11.GL_PROJECTION);
