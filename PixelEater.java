@@ -42,17 +42,8 @@ public class PixelEater {
         }
 
         pacman p = new pacman();
-        monster m = new monster();
-        monster m1 = new monster();
-        monster m2 = new monster();
-        monster m3 = new monster();
-        monster m4 = new monster();
-        monster m5 = new monster();
-        monster m6 = new monster();
-        monster m7 = new monster();
-        monster m8 = new monster();
-        monster m9 = new monster();
-        monster m0 = new monster();
+        monster m = new monster(27.5,30.5);
+        monster m1 = new monster(30.5, 27.5);
         
 
         // init OpenGL here
@@ -92,7 +83,10 @@ public class PixelEater {
                 p.updatePos(gameboard, height);
                 updateScore();
                 m.monster();
+                m1.monster();
+               
                 m.updatePos(file, gameboard, height);
+                m1.updatePos(file, gameboard, height);
                 GL11.glEnd();
             } else {
 
