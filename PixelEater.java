@@ -17,11 +17,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.Sys;
 
 public class PixelEater {
-    
+    int score = 0;
+    int scoreCheck = 0;
     int[][] gameboard = new int[61][55];
     int height = 61;
     int width = 55;
-    
+
     //tried using public enums
     //used int instead
     private int state = 0; //start in menu mode = 0
@@ -36,7 +37,7 @@ public class PixelEater {
             e.printStackTrace();
             System.exit(0);
         }
-        
+
         pacman p = new pacman();
         monster m = new monster();
 
@@ -45,6 +46,8 @@ public class PixelEater {
         GL11.glLoadIdentity();
         GL11.glOrtho(0, 55, 62, 0, 1, -1);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        File file = new File("Pacman Board.png");
+        getColorValue(file);
         while (!Display.isCloseRequested()) {
             // Clear the screen and depth buffer
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
@@ -52,38 +55,46 @@ public class PixelEater {
             // set the color of the quad (R,G,B,A)
             GL11.glColor3f(0f, 1f, 0f);
             //put the file into memory and then modify the memory
-            File file = new File("Pacman Board.png");
+
             startButton s = new startButton(10, 10);
-            if(state == 0){
-                    
-                    if(Mouse.getX() > 100  && Mouse.getX() < 450 && Mouse.getY() > 320 && Mouse.getY() < 520){
-                        GL11.glColor3f(1f, 0f, 0f);
-                        s.startButtonInit();
-                        if(Mouse.isButtonDown(0)){state = 1;};
-                    }
-                    else{
-                        System.out.println(Mouse.getX() + ", " + Mouse.getY());
-                        s.startButtonInit();
-                    }
-            }
-            else if(state == 1){
-                    GL11.glBegin(GL11.GL_QUADS);
-                    getColorValue(file);
-                    drawboard();
-                    p.pacman();
-                    p.updatePos(file, gameboard, height);
-                    m.monster();
-                    m.updatePos(file, gameboard, height);
-                    GL11.glEnd();
-            }
-            else{
-                
+            if (state == 0) {
+
+                if (Mouse.getX() > 100 && Mouse.getX() < 450 && Mouse.getY() > 320 && Mouse.getY() < 520) {
+                    GL11.glColor3f(1f, 0f, 0f);
+                    s.startButtonInit();
+                    if (Mouse.isButtonDown(0)) {
+                        state = 1;
+                    };
+                } else {
+                    System.out.println(Mouse.getX() + ", " + Mouse.getY());
+                    s.startButtonInit();
+                }
+            } else if (state == 1) {
+                GL11.glBegin(GL11.GL_QUADS);
+                drawboard();
+                p.pacman();
+                score = p.getScore();
+                scoreCheck = p.getscoreCheck();
+                p.updatePos(gameboard, height);
+                updateScore();
+                m.monster();
+                m.updatePos(file, gameboard, height);
+                GL11.glEnd();
+            } else {
+
             }
             Display.update();
         }
 
         Display.destroy();
     }
+    public void updateScore() {
+		if (score >scoreCheck) {
+			Display.setTitle("Score: " + score);
+                        scoreCheck = score;
+		}
+		
+	}
 
     public void getColorValue(File file) throws IOException {
 
@@ -94,12 +105,13 @@ public class PixelEater {
             for (int j = 0; j < width; j++) {
 
                 int clr = image.getRGB(j, i);
-                gameboard[height - i-1][j] = clr;
-                
+                gameboard[height - i - 1][j] = clr;
+
             }
         }
 
     }
+
 
     public void drawboard() {
         for (int i = 0; i < width; i++) {
@@ -108,18 +120,14 @@ public class PixelEater {
                 int green = (gameboard[j][i] & 0x0000ff00) >> 8;
                 int blue = gameboard[j][i] & 0x000000ff;
                 GL11.glColor3f(red, green, blue);
-                GL11.glVertex2f(i,height - j);
-                GL11.glVertex2f((i + 1), height -j);
-                GL11.glVertex2f((i + 1),height - j+1);
-                GL11.glVertex2f(i, height -j+1 );
+                GL11.glVertex2f(i, height - j);
+                GL11.glVertex2f((i + 1), height - j);
+                GL11.glVertex2f((i + 1), height - j + 1);
+                GL11.glVertex2f(i, height - j + 1);
             }
         }
     }
 
-    
-
-    
-    
     public static void main(String[] argv) throws IOException {
         PixelEater game = new PixelEater();
         game.start();
