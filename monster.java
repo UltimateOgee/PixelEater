@@ -26,13 +26,14 @@ import org.newdawn.slick.util.ResourceLoader;
  */
 public class monster {
     
-    int score = 0;
-    double x = 39.5;
-    double y = 47.5;
+     int score = 0;
+    double x ;
+    double y;
     double xp, yp;
-    
-    public monster(){
-    }
+
+    public monster(double x, double y) {
+        this.x = x;
+        this.y = y;
     
     public void monster() {
 
