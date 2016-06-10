@@ -1,24 +1,24 @@
 package pixeleater;
 
 //239
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.Thread.State;
 import javax.imageio.ImageIO;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.Sys;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.AudioLoader;
+import org.newdawn.slick.util.ResourceLoader;
 
-public class PixelEater {
+public class Pixeleater {
+
     int score = 0;
     int scoreCheck = 0;
     int[][] gameboard = new int[61][55];
@@ -30,21 +30,22 @@ public class PixelEater {
     private int state = 0; //start in menu mode = 0
     //goto game = 1
     //goto other = other nums
+    private Audio song;
 
     public void start() throws IOException {
         try {
             Display.setDisplayMode(new DisplayMode(550, 620)); //added ten to x and y to prevent out of bound error
             Display.create();
             Display.setTitle("Pixel Eater by Nathan and Shubh");
+
         } catch (LWJGLException e) {
             e.printStackTrace();
             System.exit(0);
         }
 
         pacman p = new pacman();
-        monster m = new monster(27.5,30.5);
+        monster m = new monster(27.5, 30.5);
         monster m1 = new monster(30.5, 27.5);
-        
 
         // init OpenGL here
         GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -53,26 +54,32 @@ public class PixelEater {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         File file = new File("Pacman Board.png");
         getColorValue(file);
+        song = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("green-greens.wav"));
+        song.playAsMusic(1.0f, 1.0f, true);
+        
+       startButton s = new startButton(10, 10);
+       // s.init();
+        
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
         while (!Display.isCloseRequested()) {
             // Clear the screen and depth buffer
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
-            // set the color of the quad (R,G,B,A)
-            GL11.glColor3f(0f, 1f, 0f);
-            //put the file into memory and then modify the memory
-
-            startButton s = new startButton(10, 10);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);         
+            
             if (state == 0) {
 
                 if (Mouse.getX() > 100 && Mouse.getX() < 450 && Mouse.getY() > 320 && Mouse.getY() < 520) {
                     GL11.glColor3f(1f, 0f, 0f);
-                    s.startButtonInit();
+                   // s.startButtonInit();
+
                     if (Mouse.isButtonDown(0)) {
-                        state = 1;
+                        state = 1;                       
+                        
                     };
                 } else {
+                    // set the color of the quad (R,G,B,A)
+                    GL11.glColor3f(0f, 1f, 0f);
                     System.out.println(Mouse.getX() + ", " + Mouse.getY());
-                    s.startButtonInit();
+                   // s.startButtonInit();
                 }
             } else if (state == 1) {
                 GL11.glBegin(GL11.GL_QUADS);
@@ -84,7 +91,7 @@ public class PixelEater {
                 updateScore();
                 m.monster();
                 m1.monster();
-               
+
                 m.updatePos(file, gameboard, height);
                 m1.updatePos(file, gameboard, height);
                 GL11.glEnd();
@@ -96,17 +103,19 @@ public class PixelEater {
 
         Display.destroy();
     }
+
     public void updateScore() {
-		if (score >scoreCheck) {
-			Display.setTitle("Pixel Eater by Nathan and Shubh"+"  Score: " + score);
-                        scoreCheck = score;
-		}
-		if (score => 240){
-			Display.setTitle("Pixel Eater by Nathan and Shubh"+"  Score: " + "you win!");
-                        scoreCheck = score;	
-		}
-		
-	}
+
+        if (score > scoreCheck) {
+            Display.setTitle("Pixel Eater by Nathan and Shubh" + "  Score: " + score);
+            scoreCheck = score;
+        }
+        if (score == 244) {
+            Display.setTitle("Pixel Eater by Nathan and Shubh" + "  Score: " + "you win!");
+            scoreCheck = score;
+        }
+
+    }
 
     public void getColorValue(File file) throws IOException {
 
@@ -124,7 +133,6 @@ public class PixelEater {
 
     }
 
-
     public void drawboard() {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -141,7 +149,8 @@ public class PixelEater {
     }
 
     public static void main(String[] argv) throws IOException {
-        PixelEater game = new PixelEater();
+        Pixeleater game = new Pixeleater();
+
         game.start();
 
     }
