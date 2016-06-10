@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pixeleater;
 
 import java.awt.image.BufferedImage;
@@ -31,6 +26,15 @@ public class pacman {
     public pacman() {
 
     }
+    
+    public double getx(){
+        return x;
+    }
+    
+    public double gety(){
+        return y;
+    }
+    
     public int getScore(){
         return score;
     }
@@ -127,8 +131,3 @@ public class pacman {
         
     }
 }
-
-
-    
-
-
