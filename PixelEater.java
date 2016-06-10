@@ -35,6 +35,7 @@ public class PixelEater {
         try {
             Display.setDisplayMode(new DisplayMode(550, 620)); //added ten to x and y to prevent out of bound error
             Display.create();
+            Display.setTitle("Pixel Eater by Nathan and Shubh");
         } catch (LWJGLException e) {
             e.printStackTrace();
             System.exit(0);
@@ -103,8 +104,12 @@ public class PixelEater {
     }
     public void updateScore() {
 		if (score >scoreCheck) {
-			Display.setTitle("Score: " + score);
+			Display.setTitle("Pixel Eater by Nathan and Shubh"+"  Score: " + score);
                         scoreCheck = score;
+		}
+		if (score => 240){
+			Display.setTitle("Pixel Eater by Nathan and Shubh"+"  Score: " + "you win!");
+                        scoreCheck = score;	
 		}
 		
 	}
