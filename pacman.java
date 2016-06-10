@@ -23,15 +23,21 @@ import org.newdawn.slick.util.ResourceLoader;
  * @author Shubhankar Singh
  */
 public class pacman {
-    
     int score = 0;
+    int scoreCheck =0;
     double x = 27.5;
     double y = 47.5;
-    
-    public pacman(){
-        
+
+    public pacman() {
+
     }
-    
+    public int getScore(){
+        return score;
+    }
+    public int getscoreCheck(){
+        return scoreCheck;
+    }
+
     public void pacman() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
@@ -51,19 +57,24 @@ public class pacman {
         GL11.glEnd();
         GL11.glPopMatrix();
     }
-    
-    public void updatePos(File file, int[][] gameboard, int height) throws IOException {
-        BufferedImage image = ImageIO.read(file);
+
+    public void updatePos(int[][] gameboard, int height) throws IOException {
         float border = 1.49999f;
         int yPlaceholder = (int) y;
         int xPlaceholder = (int) x;
-        int colorRight = gameboard[height - yPlaceholder][xPlaceholder+1];
-        int colorLeft = gameboard[height - yPlaceholder][xPlaceholder-1];
-        int colorTop = gameboard[(height - yPlaceholder) +1][xPlaceholder];
-        int colorBottom = gameboard[(height - yPlaceholder) -1][xPlaceholder];
-        System.out.println("coordinates: "+ (height - yPlaceholder) + ","+ xPlaceholder +"Right: "+colorRight + "Left: " +colorLeft + "Top: "+colorTop + "Bottom: " +colorBottom);
-
-        
+        int xLeft = (int) (x - border);
+        int xRight = (int) (x + border);
+        int yDown = (int) (y + border);
+        int yUp = (int) (y - border);
+        int colorRight = gameboard[height - yPlaceholder][xRight];
+        int colorLeft = gameboard[height - yPlaceholder][xLeft];
+        int colorTop = gameboard[height - yUp][xPlaceholder];
+        int colorBottom = gameboard[height - yDown][xPlaceholder];
+        /*  int topR =gameboard[height - yUp][xRight];
+         int topL=gameboard[height - yUp][xLeft];
+         int botR=gameboard[height - yDown][xRight];
+         int botL=gameboard[height - yDown][xLeft];*/
+        System.out.println("coordinates: " + (height - yPlaceholder) + "," + xPlaceholder + "Right: " + colorRight + "Left: " + colorLeft + "Top: " + colorTop + "Bottom: " + colorBottom);
 
         if (Keyboard.isKeyDown(Keyboard.KEY_LEFT) && colorLeft != -16767233) {
             x -= .01;
@@ -72,14 +83,26 @@ public class pacman {
             x += .01;
         }
 
-        if (Keyboard.isKeyDown(Keyboard.KEY_UP)&&colorTop != -16767233) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_UP) && colorTop != -16767233) {
             y -= .01;
         }
-        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)&& colorBottom != -16767233) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN) && colorBottom != -16767233) {
             y += .01;
         }
-
-        if (colorRight == -10240 || colorLeft == -10240 || colorBottom == -10240 || colorTop == -10240) {
+        if (colorRight == -10240) {
+            gameboard[height - yPlaceholder][xRight] = -1;
+            score += 1;
+        }
+        if (colorLeft == -10240) {
+            gameboard[height - yPlaceholder][xLeft] = -1;
+            score += 1;
+        }
+        if (colorTop == -10240) {
+            gameboard[height - yUp][xPlaceholder] = -1;
+            score += 1;
+        }
+        if (colorBottom == -10240) {
+            gameboard[(height - yDown)][xPlaceholder] = -1;
             score += 1;
         }
 
@@ -101,6 +124,11 @@ public class pacman {
         if (x > 53.489999999996426) {
             x = 1.1999999999985015;
         }
+        
     }
-    
 }
+
+
+    
+
+
