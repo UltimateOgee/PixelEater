@@ -1,32 +1,50 @@
-package lwjgl.program;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package lwjglprogram;
 
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.Sys;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.TrueTypeFont;
 
 public class LWJGLProgram {
 
     int score = 0;
-    double x = 23.5;
-    double y = 46.5;
+    int scoreCheck = 0;
+    double x = 27.5;
+    double y = 47.5;
     int[][] gameboard = new int[61][55];
     int height = 61;
     int width = 55;
+    TrueTypeFont font;
+
+    public TrueTypeFont myFont() {
+        Font awtFont = new Font("Lucida Sans Regular", Font.PLAIN, 20); //name, style (PLAIN, BOLD, or ITALIC), size
+        font = new TrueTypeFont(awtFont, false);
+        return font;
+    }
+    public void updateScore() {
+		if (score >scoreCheck) {
+			Display.setTitle("Score: " + score);
+                        scoreCheck = score;
+		}
+		
+	}
 
     public void start() throws IOException {
         try {
-            Display.setDisplayMode(new DisplayMode(550, 610)); //added ten to x and y to prevent out of bound error
+            Display.setDisplayMode(new DisplayMode(550, 660)); //added ten to x and y to prevent out of bound error
             Display.create();
         } catch (LWJGLException e) {
             e.printStackTrace();
@@ -36,25 +54,27 @@ public class LWJGLProgram {
         // init OpenGL here
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadIdentity();
-        GL11.glOrtho(0, 55, 61, 0, 1, -1);
+        GL11.glOrtho(0, 55, 66, 0, 1, -1);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        File Board = new File("Pacman Board.png");
+        getColorValue(Board);
+        
         while (!Display.isCloseRequested()) {
             // Clear the screen and depth buffer
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
             // set the color of the quad (R,G,B,A)
             GL11.glColor3f(0f, 38f, 255f);
-            //put the file into memory and then modify the memory
-            // draw quad
-            File file = new File("Pacman Board.png");
+
             GL11.glBegin(GL11.GL_QUADS);
-            getColorValue(file);
+
             drawboard();
             pacman();
-            updatePos(file);
+            updatePos();
             GL11.glEnd();
 
             Display.update();
+            
         }
 
         Display.destroy();
@@ -69,17 +89,8 @@ public class LWJGLProgram {
             for (int j = 0; j < width; j++) {
 
                 int clr = image.getRGB(j, i);
-                gameboard[height - i-1][j] = clr;
-                
-                //int red = (clr & 0x00ff0000) >> 16;
-                //int green = (clr & 0x0000ff00) >> 8;
-                //int blue = clr & 0x000000ff;
+                gameboard[height - i - 1][j] = clr;
 
-                //GL11.glColor3f(red, green, blue);
-                //GL11.glVertex2f(i, j);
-                //    GL11.glVertex2f(i + 1, j);
-                //    GL11.glVertex2f(i + 1, j + 1);
-                //    GL11.glVertex2f(i, j + 1);
             }
         }
 
@@ -92,26 +103,31 @@ public class LWJGLProgram {
                 int green = (gameboard[j][i] & 0x0000ff00) >> 8;
                 int blue = gameboard[j][i] & 0x000000ff;
                 GL11.glColor3f(red, green, blue);
-                GL11.glVertex2f(i,height - j);
-                GL11.glVertex2f((i + 1), height -j);
-                GL11.glVertex2f((i + 1),height - j+1);
-                GL11.glVertex2f(i, height -j+1 );
+                GL11.glVertex2f(i, height - j);
+                GL11.glVertex2f((i + 1), height - j);
+                GL11.glVertex2f((i + 1), height - j + 1);
+                GL11.glVertex2f(i, height - j + 1);
             }
         }
     }
 
-    public void updatePos(File file) throws IOException {
-        BufferedImage image = ImageIO.read(file);
+    public void updatePos() {;
         float border = 1.49999f;
         int yPlaceholder = (int) y;
         int xPlaceholder = (int) x;
-        int colorRight = gameboard[height - yPlaceholder][xPlaceholder+1];
-        int colorLeft = gameboard[height - yPlaceholder][xPlaceholder-1];
-        int colorTop = gameboard[(height - yPlaceholder) +1][xPlaceholder];
-        int colorBottom = gameboard[(height - yPlaceholder) -1][xPlaceholder];
-        System.out.println("coordinates: "+ (height - yPlaceholder) + ","+ xPlaceholder +"Right: "+colorRight + "Left: " +colorLeft + "Top: "+colorTop + "Bottom: " +colorBottom);
-
-        
+        int xLeft = (int) (x - border);
+        int xRight = (int) (x + border);
+        int yDown = (int) (y + border);
+        int yUp = (int) (y - border);
+        int colorRight = gameboard[height - yPlaceholder][xRight];
+        int colorLeft = gameboard[height - yPlaceholder][xLeft];
+        int colorTop = gameboard[height - yUp][xPlaceholder];
+        int colorBottom = gameboard[height - yDown][xPlaceholder];
+        /*  int topR =gameboard[height - yUp][xRight];
+         int topL=gameboard[height - yUp][xLeft];
+         int botR=gameboard[height - yDown][xRight];
+         int botL=gameboard[height - yDown][xLeft];*/
+        System.out.println("coordinates: " + (height - yPlaceholder) + "," + xPlaceholder + "Right: " + colorRight + "Left: " + colorLeft + "Top: " + colorTop + "Bottom: " + colorBottom);
 
         if (Keyboard.isKeyDown(Keyboard.KEY_LEFT) && colorLeft != -16767233) {
             x -= .01;
@@ -120,27 +136,26 @@ public class LWJGLProgram {
             x += .01;
         }
 
-        if (Keyboard.isKeyDown(Keyboard.KEY_UP)&&colorTop != -16767233) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_UP) && colorTop != -16767233) {
             y -= .01;
         }
-        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)&& colorBottom != -16767233) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN) && colorBottom != -16767233) {
             y += .01;
         }
-
-       /* if ((colorRight == -16767233)) {
-            x -= .01;
+        if (colorRight == -10240) {
+            gameboard[height - yPlaceholder][xRight] = -1;
+            score += 1;
         }
-        if ((colorLeft == -16767233)) {
-            x += .01;
+        if (colorLeft == -10240) {
+            gameboard[height - yPlaceholder][xLeft] = -1;
+            score += 1;
         }
-        if ((colorBottom == -16767233)) {
-            y -= .01;
+        if (colorTop == -10240) {
+            gameboard[height - yUp][xPlaceholder] = -1;
+            score += 1;
         }
-        if ((colorTop == -16767233)) {
-            y += .01;
-        } */
-
-        if (colorRight == -10240 || colorLeft == -10240 || colorBottom == -10240 || colorTop == -10240) {
+        if (colorBottom == -10240) {
+            gameboard[(height - yDown)][xPlaceholder] = -1;
             score += 1;
         }
 
@@ -162,6 +177,7 @@ public class LWJGLProgram {
         if (x > 53.489999999996426) {
             x = 1.1999999999985015;
         }
+        updateScore();
     }
 
     public void pacman() {
