@@ -1,2 +1,4 @@
 # PixelEater
-Game made for IB Comp Sci SL by Shubh and Nathan
+Game made for IB Comp Sci SL by Shubh
+
+Uses LWJGL
